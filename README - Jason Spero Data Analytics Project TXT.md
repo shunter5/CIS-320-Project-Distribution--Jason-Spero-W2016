@@ -1,6 +1,9 @@
 # CIS-320-Project-Distribution-
 Professor/Class Peer review of CIS 320 Data Analytics Project
 
+Jason Spero
+CIS 320 Winter 2016
+3/8/2016
 
 CIS 320 Data Analytics Project: Relationships between Oil and GAS
 
