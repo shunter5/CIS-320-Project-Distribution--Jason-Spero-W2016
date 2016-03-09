@@ -38,6 +38,7 @@ project. This begged question such as why this drop occurred? Aare these prices
 were normal, compared to historic prices. to see if the lock step the correlation 
 between oil and resulting gasoline prices were still in play both in and outside 
 California? If possible, implement forecast data to project future prices.
+
 Oil and Gas prices have not been this low since 2004, before the great recession, 
 during they fluctuated but remained very high, approaching $145/bbl. and $5/gal 
 regular unleaded in CA, then now dropping to $30/bbl. and $2.25/gal in CA and 
@@ -46,6 +47,7 @@ tax on goods and services, along with a regressive tax on the poor which could
 make or break profitability for business and family. Making understanding the 
 past, present and possible future of gasoline and oil prices is important for 
 everyone.
+
 Let us begin this analysis with context; for starters, 42 % of every barrel is refined 
 in to gasoline (EIA), making oil the most significant factor in gasolines cost. And as 
 such historically gasoline and oil have been in lock step, as oil rises gasoline rise, 
@@ -55,13 +57,15 @@ so plentiful are the refineries to make gasoline, in the last 30 years no new
 refineries have been built and through attrition fineries have closed, in California 
 4 alone. On top of current refineries going down due to maintenance or 
 catastrophic malfunctions.
+
 With oil, under current federal law it is illegal to export, but refined products can 
 be so along with California having its own special blend of gasoline, which only a 
 small subset of refineries can make, has constrained refinery capacity on the 
 whole. Which is blamed not only for the US but especially so California as the  
 antidotal reason why even today gasoline prices seem to be higher than they 
 were last time oil was this low. 
-This analysis with start with line plot comparisons of oil, and reformulated gas 
+
+This analysis will start with line plot comparisons of oil, and reformulated gas 
 prices over time, from that data univariate statistics will be calculated for both 
 products. Then linear and logarithmic regression correlations of gasoline along 
 with oil prices will be plotted and R^2 values will be calculated to further 
@@ -70,46 +74,59 @@ the question at hand. Then to further show the importance of oil prices, forecas
 will be made by using EIA STEO (Shot Term Economic Outlook) data for WTI oil, 
 this will be the basis for future gasoline prices as oil is the foremost component to 
 inform these predications.
+
 Hypothesis
+
 What is the key driver for gasoline prices? Is it the cost of Oil, or is it the other factors?
 
 Since 42% of every barrel of oil goes to gasoline production it is anecdotally assumed that oil 
 will be the key driver, but it is not the only component to the price of Gasoline, if so those other 
 factors will be prominent in the analysis. Linear and Logarithmic regression models will be used 
 to show the amount contributable to Oil and other factors to gasoline price levels.
+
 Methodology
-Research Methods 
+
+ Research Methods 
+
 This analysis required on the research on the whole of the oil and gasoline market and two key 
 pieces of data; historic prices of oil from the past to the present, and CA reformulated gas (US 
 all grades is used as proxy) from the years of 1994 to today. This is due to the limitation of 
 gasoline price data.
+
 From research on the relationship between oil and gasoline prices, the EIA had deduced that 
 the petroleum refinery industry as a whole uses the price-pass-through model, where at each 
 stage from oil derrick to gas station value or inputs through additional costs are added along 
 the way to the products final form and purchase. However, from each barrel of oil, 42% goes to 
 gasoline, making it the largest component, so it is logical to use oil as the comparison for 
 gasoline prices, because hypothetically as oil prices change, gasoline should change in lock step.
+
 Even the price-pass-through model, allows for additional costs to associated with other factors 
 besides oil, such as marketing, refining, transport, seasonality and taxes once sold at the pump, 
 but according to the  EIA oil is the defining cost.
+
 U.S. all grades reformulated as it the type of Gasoline mandated to use by state law, as it has 
 additives that allow for cleaner burning
+
 WTI (West Texas Intermediate) is used as the average barometer for US oil prices and is 
 routinely quoted in financial news reports.
+
 To understand oil and gas's relationship, I will use these data sets, compare them, and then 
 draw conclusions.  To answer the question, is oil sill the key driver in gasoline price? On the 
 other hand, if it is other factors besides oil.
+
 These will be informed by; 
 Drawing historical line plots for all price level data sets.
 Extracting univariate statistics from both oil and gasoline price data sets.
 Developing linear models, and regression line models for both raw and logarithmic numbers, 
 then comparing the R^2 values in determining the magnitude of correlation, and plotting 
 correlations.
+
 For monthly Oil price levels, I used the WTI (West Texas Intermedia) price history due this the 
 primary one quoted in newspapers, there data goes back to 1986 to today, from the EIA.
 For CA Reformulated Gasoline price levels, I used data sets for US all grades Reformulated, from 
 the EIA form 1994-today. For this reason, the analysis will consist of observation for this period.
 All data will be read in from website and the processed in R.
+
 Data sources
 
 Burdette, Michael, and John Zyren. "Gasoline Price Pass-through." Gasoline Price Pass-through. U.S. 
@@ -123,65 +140,57 @@ Short-Term Energy Outlook (U.S. Energy Information Administration)
 http://www.eia.gov/forecasts/steo/report/prices.cfm
 Project Example: What a Gas! The Falling Price of Oil and Ontario Gasoline Prices
 http://www.r-bloggers.com/what-a-gas-the-falling-price-of-oil-and-ontario-gasoline-prices/
+
 Code Samples
 
 library(ts)
 library(forecast)
 
 # Read in the WIT Oil  Price Data
-WTI_data <- 
-read.csv('https://www.quandl.com/api/v3/datasets/EIA/PET_RWTC_D.csv?auth_token=2P8RfNEKSfAsU
-Ja2js9g&collapse=monthly&end_date=2016-02-21')
+>WTI_data <- read.csv('https://www.quandl.com/api/v3/datasets/EIA/PET_RWTC_D.csv?auth_token=2P8RfNEKSfAsUJa2js9g&collapse=monthly&end_date=2016-02-21')
 
+># Read in the California proxy Gas Price Data
+>data <- read.csv('https://www.quandl.com/api/v3/datasets/EIA/PET_EMM_EPM0R_PTE_SCA_DPG_W.csv?auth_token=2P8RfNEKSfAsUJa2js9g&collapse=monthly')
 
+># Create a time series object for the WTI and California Avg
+>WTI <- ts(data=WTI_data$Value, frequency=12, start=c(1995,1), end=c(2015,12))
+>CA <- ts(data=data$Value, frequency=12, start=c(1995,1), end=c(2015,12))
 
+># Create linear models (normal and log-log)
+>l1 <- lm(CA ~ WTI, data=combined)
+>l2 <- lm(log(CA) ~ log(WTI), data=combined)
 
-# Read in the California proxy Gas Price Data
-data <- 
-read.csv('https://www.quandl.com/api/v3/datasets/EIA/PET_EMM_EPM0R_PTE_SCA_DPG_W.csv?auth
-_token=2P8RfNEKSfAsUJa2js9g&collapse=monthly')
-
-# Create a time series object for the WTI and California Avg
-WTI <- ts(data=WTI_data$Value, frequency=12, start=c(1995,1), end=c(2015,12))
-CA <- ts(data=data$Value, frequency=12, start=c(1995,1), end=c(2015,12))
-
-# Create linear models (normal and log-log)
-l1 <- lm(CA ~ WTI, data=combined)
-l2 <- lm(log(CA) ~ log(WTI), data=combined)
-
-# Compare relative performance
-summary(l1)
-summary(l2)
-plot(l1)
-plot(l2)
+># Compare relative performance
+>summary(l1)
+>summary(l2)
+>plot(l1)
+>plot(l2)
 
 # Plot
-plot(CA ~ WTI, data=combined, pch=16, cex=0.3)
-abline(l1)
-plot(log(CA) ~ log(WTI), data=combined, pch=16, cex=0.3)
-abline(l2)
+>plot(CA ~ WTI, data=combined, pch=16, cex=0.3)
+>abline(l1)
+>plot(log(CA) ~ log(WTI), data=combined, pch=16, cex=0.3)
+>abline(l2)
 
-# Read in WTI forecast data
-WTI_forecast <- read.csv 
-('https://www.quandl.com/api/v3/datasets/EIA/STEO_NYWSTEO_M.csv?auth_token=2P8RfNEKSfAsUJa
-2js9g')
+># Read in WTI forecast data
+>WTI_forecast <- read.csv ('https://www.quandl.com/api/v3/datasets/EIA/STEO_NYWSTEO_M.csv?auth_token=2P8RfNEKSfAsUJa2js9g')
 
-fit <- forecast(l2, newdata=data.frame(WTI=WTI_forecast$Value))
+>fit <- forecast(l2, newdata=data.frame(WTI=WTI_forecast$Value))
  
-# Unlog
-fit$mean <- exp(fit$mean)
-fit$lower <- exp(fit$lower)
-fit$upper <- exp(fit$upper)
-fit$x <- exp(fit$x)
+># Unlog
+>fit$mean <- exp(fit$mean)
+>fit$lower <- exp(fit$lower)
+>>fit$upper <- exp(fit$upper)
+>fit$x <- exp(fit$x)
 
-# Plot
-plot(fit, ylab='California Average gas Price ($/gal)')
+># Plot
+>plot(fit, ylab='California Average gas Price ($/gal)')
 
  
 Results
 Descriptive Statistics
 Univariate Statistics
-summary(WTI)
+>summary(WTI)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
   11.35   20.19   29.70   46.66   74.44  133.90 
 > summary(CA)
@@ -189,7 +198,8 @@ summary(WTI)
   1.121   1.398   2.007   2.353   3.206   4.707       1 
 
 Linear and Log-log Regression Statistics
-summary(l1)
+
+>summary(l1)
 
 Call:
 lm(formula = CA ~ WTI, data = combined)
@@ -233,7 +243,9 @@ Illustrative graphics
  
  
 Hypothesis Testing
+
 Regression models
+
 Linear
  
 Log-log
@@ -242,9 +254,9 @@ Log-log
 Forecasting
  
 Future gasoline prices are predicted using STEO derived oil prices, from 2016-2017.
+
 Discussion
-(craft your main arguments
-by building on the results you have presented earlier)
+
 The argument is that oil is a key driver for gasoline costs, and that as oil prices change so do gasoline 
 prices change directly but somewhat lagged as the price difference moves through the market. We can 
 see from the results just from the combined line plots of WTI oil prices v CA gas prices that they are an 
@@ -276,12 +288,15 @@ stationary, but this is not true in the real world, which can and will affect th
 predictions. Nevertheless, regression analysis is used by the EIA in developing there models, so there is 
 at least some validity in using it here to not only derive future gas prices but also find what is most 
 contributable for their change.
+
 Conclusion
+
 Well, from all the data and research collected, regression analysis is is used and can at least point one in 
 the direction of where gasoline prices are going and why do they change. We see her in spite that 
 gasoline only makes up 42% of each oil barrel, it is a key driver of present and future gasoline price. 
 Therefore, as long as oil remains cheap, gasoline should be also even if there is a bit of lag due to the 
 nature of the market.
+
 Proviso... due to the analysis inability to correct an error in reading in the data in to R for processing, all 
 data points are read in backwards. Nevertheless, since all data is read in the same way, regression 
 analysis and forecasting was still possible without any adverse effect to outcome. The only affect is 
