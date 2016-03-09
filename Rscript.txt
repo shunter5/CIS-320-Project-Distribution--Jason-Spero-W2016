@@ -1,0 +1,45 @@
+library(ts)
+library(forecast)
+
+# Read in the WIT Oil  Price Data
+WTI_data <- read.csv('https://www.quandl.com/api/v3/datasets/EIA/PET_RWTC_D.csv?auth_token=2P8RfNEKSfAsUJa2js9g&collapse=monthly&end_date=2016-02-21')
+
+# Read in the California proxy Gas Price Data
+data <- read.csv('https://www.quandl.com/api/v3/datasets/EIA/PET_EMM_EPM0R_PTE_SCA_DPG_W.csv?auth_token=2P8RfNEKSfAsUJa2js9g&collapse=monthly')
+
+# Create a time series object for the WTI and California Avg
+WTI <- ts(data=WTI_data$Value, frequency=12, start=c(1995,1), end=c(2015,12))
+CA <- ts(data=data$Value, frequency=12, start=c(1995,1), end=c(2015,12))
+
+# Create linear models (normal and log-log)
+l1 <- lm(CA ~ WTI, data=combined)
+l2 <- lm(log(CA) ~ log(WTI), data=combined)
+
+# Compare relative performance
+summary(l1)
+summary(l2)
+plot(l1)
+plot(l2)
+
+# Plot
+plot(CA ~ WTI, data=combined, pch=16, cex=0.3)
+abline(l1)
+plot(log(CA) ~ log(WTI), data=combined, pch=16, cex=0.3)
+abline(l2)
+
+# Read in WTI forecast data
+WTI_forecast <- read.csv('https://www.quandl.com/api/v3/datasets/EIA/STEO_NYWSTEO_M.csv?auth_token=2P8RfNEKSfAsUJa2js9g')
+fit <- forecast(l2, newdata=data.frame(WTI=WTI_forecast$Value))
+ 
+
+# Unlog
+fit$mean <- exp(fit$mean)
+fit$lower <- exp(fit$lower)
+fit$upper <- exp(fit$upper)
+fit$x <- exp(fit$x)
+
+# Plot
+plot(fit, ylab='California Average gas Price ($/gal)')
+
+
+
